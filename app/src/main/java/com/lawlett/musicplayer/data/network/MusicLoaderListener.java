@@ -3,9 +3,7 @@
  * You should have received a copy of the license in this archive (see LICENSE).
  * Copyright @Dibakar_Mistry(dibakar.ece@gmail.com), 2017.
  */
-package com.lawlett.musicplayer.network;
-
-import com.lawlett.musicplayer.models.SongModel;
+package com.lawlett.musicplayer.data.network;
 
 import java.util.List;
 
