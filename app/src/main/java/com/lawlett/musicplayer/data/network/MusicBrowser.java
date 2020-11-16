@@ -3,17 +3,14 @@
  * You should have received a copy of the license in this archive (see LICENSE).
  * Copyright @Dibakar_Mistry(dibakar.ece@gmail.com), 2017.
  */
-package com.lawlett.musicplayer.network;
+package com.lawlett.musicplayer.data.network;
 
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 
-
-import com.lawlett.musicplayer.models.SongModel;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.json.JSONArray;

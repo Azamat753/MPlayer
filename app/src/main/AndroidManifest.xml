@@ -35,7 +35,7 @@
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
-        <activity android:name=".music.MusicActivity">
+        <activity android:name=".ui.music.MusicActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
