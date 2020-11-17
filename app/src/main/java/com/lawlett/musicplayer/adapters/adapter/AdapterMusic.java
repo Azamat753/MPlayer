@@ -1,9 +1,5 @@
-/*
- * This is the source code of DMAudioStreaming for Android v. 1.0.0.
- * You should have received a copy of the license in this archive (see LICENSE).
- * Copyright @Dibakar_Mistry(dibakar.ece@gmail.com), 2017.
- */
-package com.lawlett.musicplayer.adapter;
+
+package com.lawlett.musicplayer.adapters.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -32,6 +28,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +37,7 @@ import dm.audiostreamer.MediaMetaData;
 
 
 public class AdapterMusic extends BaseAdapter {
-    private List<MediaMetaData> musicList;
+    private List<MediaMetaData> musicList = new ArrayList<>();
     private Context mContext;
     private LayoutInflater inflate;
 
@@ -67,10 +64,7 @@ public class AdapterMusic extends BaseAdapter {
     }
 
     public void refresh(List<MediaMetaData> musicList) {
-        if (this.musicList != null) {
-            this.musicList.clear();
-        }
-        this.musicList.addAll(musicList);
+        this.musicList = musicList;
         notifyDataSetChanged();
     }
 
@@ -92,7 +86,6 @@ public class AdapterMusic extends BaseAdapter {
         }
         notifyDataSetChanged();
     }
-
 
     @Override
     public int getCount() {

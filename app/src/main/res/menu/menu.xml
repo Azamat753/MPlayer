@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/listFragment"
-        android:icon="@drawable/ic_shape"
-        android:title="history"/>
+        android:icon="@drawable/ic_music_video"
+        android:title="list"/>
 
     <item
         android:id="@+id/historyFragment"
-        android:icon="@drawable/ic_music_video"
-        android:title="list"/>
+        android:icon="@drawable/ic_shape"
+        android:title="history"/>
 
     <item
         android:id="@+id/yearsFragment"
