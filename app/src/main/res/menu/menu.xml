@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/listFragment"
-        android:icon="@drawable/ic_shape"
+        android:icon="@drawable/ic_music_video"
         android:title="history"/>
 
     <item
         android:id="@+id/historyFragment"
-        android:icon="@drawable/ic_music_video"
+        android:icon="@drawable/ic_shape"
         android:title="list"/>
 
     <item

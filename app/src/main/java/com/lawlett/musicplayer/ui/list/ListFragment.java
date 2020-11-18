@@ -6,14 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.telephony.CarrierConfigManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,14 +17,20 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.lawlett.musicplayer.AudioStreamerApplication;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.lawlett.musicplayer.App;
 import com.lawlett.musicplayer.R;
 import com.lawlett.musicplayer.adapters.adapter.AdapterMusic;
 import com.lawlett.musicplayer.data.network.MusicBrowser;
 import com.lawlett.musicplayer.data.network.MusicLoaderListener;
 import com.lawlett.musicplayer.data.network.local.Prefs;
+import com.lawlett.musicplayer.room.FavoriteModel;
+import com.lawlett.musicplayer.ui.history.HistoryFragment;
 import com.lawlett.musicplayer.ui.music.MusicActivity;
 import com.lawlett.musicplayer.ui.years.YearsFragment;
 import com.lawlett.musicplayer.widgets.LineProgress;
@@ -55,14 +54,18 @@ import dm.audiostreamer.CurrentSessionCallback;
 import dm.audiostreamer.Logger;
 import dm.audiostreamer.MediaMetaData;
 
-public class ListFragment extends Fragment implements CurrentSessionCallback, View.OnClickListener, Slider.OnValueChangedListener  {
+public class ListFragment extends Fragment implements CurrentSessionCallback, View.OnClickListener, Slider.OnValueChangedListener {
+    HistoryFragment historyFragment;
+    ImageView favoriteBtn;
+    FavoriteModel favoriteModel;
+    List<FavoriteModel> list;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!= null){
-            year = getArguments().getString(YearsFragment.YEAR,"2020");
-            Log.d("TAG",year);
+        if (getArguments() != null) {
+            year = getArguments().getString(YearsFragment.YEAR, "2020");
+            Log.d("TAG", year);
         }
     }
 
@@ -184,6 +187,15 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
         super.onDestroy();
     }
 
+    public void saveFavoriteSong() {
+
+        favoriteModel = new FavoriteModel(currentSong.getMediaTitle(),currentSong.getMediaArt(),currentSong.getMediaArtist(),currentSong.getMediaUrl());
+        App.getDataBase().favoriteDao().insert(favoriteModel);
+        Toast.makeText(context, currentSong.getMediaTitle(), Toast.LENGTH_SHORT).show();
+
+        Log.e("favorite", "sendFavoriteSong: " + currentSong.getMediaTitle());
+    }
+
     @Override
     public void updatePlaybackState(int state) {
         Logger.e("updatePlaybackState: ", "" + state);
@@ -194,6 +206,7 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
                 if (currentSong != null) {
                     currentSong.setPlayState(PlaybackStateCompat.STATE_PLAYING);
                     notifyAdapter(currentSong);
+
                 }
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
@@ -317,9 +330,9 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private void configAudioStreamer() {
         streamingManager = AudioStreamingManager.getInstance(context);
         streamingManager.setPlayMultiple(true);
-        if (!streamingManager.isMediaListEmpty()){
+        if (!streamingManager.isMediaListEmpty()) {
             streamingManager.clearList();
-            Log.d("TAG","yUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
+            Log.d("TAG", "yUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
         }
         streamingManager.setMediaList(listOfSongs);
         streamingManager.setShowPlayerNotification(true);
@@ -358,6 +371,14 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
         btn_backward.setOnClickListener(this);
         btn_forward.setOnClickListener(this);
         btn_play.setOnClickListener(this);
+        favoriteBtn = view.findViewById(R.id.favorite_btn);
+        favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveFavoriteSong();
+            }
+        });
+
         pgPlayPauseLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -445,12 +466,12 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     }
 
     private void loadMusicData() {
-        MusicBrowser.loadMusic(new Prefs(getContext()).getYear(),context, new MusicLoaderListener() {
+        MusicBrowser.loadMusic(new Prefs(getContext()).getYear(), context, new MusicLoaderListener() {
             @Override
             public void onLoadSuccess(List<MediaMetaData> listMusic) {
-                if (!listOfSongs.isEmpty()){
+                if (!listOfSongs.isEmpty()) {
                     listOfSongs.clear();
-                    Log.d("TAG","cleaned");
+                    Log.d("TAG", "cleaned");
                 }
                 listOfSongs = listMusic;
                 adapterMusic.refresh(listOfSongs);

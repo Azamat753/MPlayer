@@ -29,7 +29,6 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lawlett.musicplayer.R;
-import com.lawlett.musicplayer.adapter.AdapterMusic;
 import com.lawlett.musicplayer.data.network.MusicBrowser;
 import com.lawlett.musicplayer.data.network.MusicLoaderListener;
 import com.lawlett.musicplayer.widgets.LineProgress;
