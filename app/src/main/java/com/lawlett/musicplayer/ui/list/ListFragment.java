@@ -9,13 +9,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.telephony.CarrierConfigManager;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +26,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.lawlett.musicplayer.AudioStreamerApplication;
 import com.lawlett.musicplayer.R;
-import com.lawlett.musicplayer.adapter.AdapterMusic;
+import com.lawlett.musicplayer.adapters.adapter.AdapterMusic;
 import com.lawlett.musicplayer.data.network.MusicBrowser;
 import com.lawlett.musicplayer.data.network.MusicLoaderListener;
+import com.lawlett.musicplayer.data.network.local.Prefs;
 import com.lawlett.musicplayer.ui.music.MusicActivity;
+import com.lawlett.musicplayer.ui.years.YearsFragment;
 import com.lawlett.musicplayer.widgets.LineProgress;
 import com.lawlett.musicplayer.widgets.PlayPauseView;
 import com.lawlett.musicplayer.widgets.Slider;
@@ -52,21 +55,24 @@ import dm.audiostreamer.CurrentSessionCallback;
 import dm.audiostreamer.Logger;
 import dm.audiostreamer.MediaMetaData;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ListFragment extends Fragment implements CurrentSessionCallback, View.OnClickListener, Slider.OnValueChangedListener  {
 
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments()!= null){
+            year = getArguments().getString(YearsFragment.YEAR,"2020");
+            Log.d("TAG",year);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_list, container, false);
     }
+
+    private String year = "2020";
 
     private Context context;
     private ListView musicList;
@@ -90,9 +96,6 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private TextView txt_bottom_SongName;
     private TextView txt_bottom_SongAlb;
 
-    NavController navController;
-    BottomNavigationView bottomNavigationView;
-
     private SlidingUpPanelLayout mLayout;
     private RelativeLayout slideBottomView;
     private boolean isExpand = false;
@@ -101,7 +104,6 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private ImageLoader imageLoader = ImageLoader.getInstance();
     private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 
-    //For  Implementation
     private AudioStreamingManager streamingManager;
     private MediaMetaData currentSong;
     private List<MediaMetaData> listOfSongs = new ArrayList<MediaMetaData>();
@@ -314,12 +316,12 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
 
     private void configAudioStreamer() {
         streamingManager = AudioStreamingManager.getInstance(context);
-        //Set PlayMultiple 'true' if want to playing sequentially one by one songs
-        // and provide the list of songs else set it 'false'
         streamingManager.setPlayMultiple(true);
+        if (!streamingManager.isMediaListEmpty()){
+            streamingManager.clearList();
+            Log.d("TAG","yUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
+        }
         streamingManager.setMediaList(listOfSongs);
-        //If you want to show the Player Notification then set ShowPlayerNotification as true
-        //and provide the pending intent so that after click on notification it will redirect to an activity
         streamingManager.setShowPlayerNotification(true);
         streamingManager.setPendingIntentAct(getNotificationPendingIntent());
     }
@@ -443,12 +445,15 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     }
 
     private void loadMusicData() {
-        MusicBrowser.loadMusic(context, new MusicLoaderListener() {
+        MusicBrowser.loadMusic(new Prefs(getContext()).getYear(),context, new MusicLoaderListener() {
             @Override
             public void onLoadSuccess(List<MediaMetaData> listMusic) {
+                if (!listOfSongs.isEmpty()){
+                    listOfSongs.clear();
+                    Log.d("TAG","cleaned");
+                }
                 listOfSongs = listMusic;
-                adapterMusic.refresh(listMusic);
-
+                adapterMusic.refresh(listOfSongs);
                 configAudioStreamer();
                 checkAlreadyPlaying();
             }
