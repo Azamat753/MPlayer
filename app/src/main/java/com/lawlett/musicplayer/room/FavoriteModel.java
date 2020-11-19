@@ -1,26 +1,46 @@
 package com.lawlett.musicplayer.room;
 
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-import dm.audiostreamer.MediaMetaData;
-
 @Entity
 public class FavoriteModel implements Serializable {
+
     @PrimaryKey(autoGenerate = true)
     private long id;
     private String title;
     private String mediaArt;
     private String mediaArtist;
     private String songUrl;
+    private String year;
+    private String idSong;
 
-    public FavoriteModel(String title,String mediaArt,String mediaArtist,String songUrl) {
+    public String getIdSong() {
+        return idSong;
+    }
+
+    public void setIdSong(String idSong) {
+        this.idSong = idSong;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public FavoriteModel(String title, String mediaArt, String mediaArtist, String songUrl, String year,String idSong) {
         this.title = title;
         this.mediaArt = mediaArt;
         this.mediaArtist = mediaArtist;
         this.songUrl=songUrl;
+        this.year = year;
+        this.idSong = idSong;
     }
 
     public String getSongUrl() {

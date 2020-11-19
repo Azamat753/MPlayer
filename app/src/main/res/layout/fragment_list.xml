@@ -16,7 +16,8 @@
             sothree:umanoOverlay="true"
             sothree:umanoPanelHeight="?attr/actionBarSize"
             sothree:umanoParalaxOffset="0dp"
-            sothree:umanoShadowHeight="4dp">
+            sothree:umanoShadowHeight="4dp"
+            tools:ignore="MissingConstraints">
 
 
 

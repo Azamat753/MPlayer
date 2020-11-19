@@ -59,12 +59,16 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     ImageView favoriteBtn;
     FavoriteModel favoriteModel;
     List<FavoriteModel> list;
+    FavoriteModel favoriteModelFromHistory;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             year = getArguments().getString(YearsFragment.YEAR, "2020");
+            if (getArguments().getSerializable(HistoryFragment.MEDIA) != null) {
+                favoriteModelFromHistory = (FavoriteModel) getArguments().getSerializable(HistoryFragment.MEDIA);
+            }
             Log.d("TAG", year);
         }
     }
@@ -110,18 +114,6 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private AudioStreamingManager streamingManager;
     private MediaMetaData currentSong;
     private List<MediaMetaData> listOfSongs = new ArrayList<MediaMetaData>();
-
-//    @Override
-//    public void onBackPressed() {
-//        if (isExpand) {
-//            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//        } else {
-//            super.onBackPressed();
-//            overridePendingTransition(0, 0);
-//            finish();
-//        }
-//    }
-
 
     public static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
@@ -189,7 +181,7 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
 
     public void saveFavoriteSong() {
 
-        favoriteModel = new FavoriteModel(currentSong.getMediaTitle(),currentSong.getMediaArt(),currentSong.getMediaArtist(),currentSong.getMediaUrl());
+        favoriteModel = new FavoriteModel(currentSong.getMediaTitle(), currentSong.getMediaArt(), currentSong.getMediaArtist(), currentSong.getMediaUrl(), new Prefs(getContext()).getYear(), currentSong.getMediaId());
         App.getDataBase().favoriteDao().insert(favoriteModel);
         Toast.makeText(context, currentSong.getMediaTitle(), Toast.LENGTH_SHORT).show();
 
@@ -330,13 +322,25 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private void configAudioStreamer() {
         streamingManager = AudioStreamingManager.getInstance(context);
         streamingManager.setPlayMultiple(true);
-        if (!streamingManager.isMediaListEmpty()) {
+        if (!streamingManager.isMediaListEmpty() && !listOfSongs.equals(new Prefs(getContext()).getYear())) {
             streamingManager.clearList();
             Log.d("TAG", "yUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
         }
         streamingManager.setMediaList(listOfSongs);
         streamingManager.setShowPlayerNotification(true);
         streamingManager.setPendingIntentAct(getNotificationPendingIntent());
+        if (favoriteModelFromHistory != null) {
+            MediaMetaData mediaMetaData = new MediaMetaData();
+            mediaMetaData.setMediaArtist(favoriteModelFromHistory.getMediaArtist());
+            mediaMetaData.setMediaTitle(favoriteModelFromHistory.getTitle());
+            mediaMetaData.setMediaArt(favoriteModelFromHistory.getMediaArt());
+            mediaMetaData.setMediaAlbum("album");
+            mediaMetaData.setMediaComposer("composer");
+            mediaMetaData.setMediaId(favoriteModelFromHistory.getIdSong());
+            mediaMetaData.setMediaDuration("210");
+            mediaMetaData.setMediaUrl(favoriteModelFromHistory.getSongUrl());
+            playSong(mediaMetaData);
+        }
     }
 
     @Override
