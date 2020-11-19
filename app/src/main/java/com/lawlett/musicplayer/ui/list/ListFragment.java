@@ -322,10 +322,6 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
     private void configAudioStreamer() {
         streamingManager = AudioStreamingManager.getInstance(context);
         streamingManager.setPlayMultiple(true);
-        if (!streamingManager.isMediaListEmpty() && !listOfSongs.equals(new Prefs(getContext()).getYear())) {
-            streamingManager.clearList();
-            Log.d("TAG", "yUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
-        }
         streamingManager.setMediaList(listOfSongs);
         streamingManager.setShowPlayerNotification(true);
         streamingManager.setPendingIntentAct(getNotificationPendingIntent());
@@ -473,10 +469,6 @@ public class ListFragment extends Fragment implements CurrentSessionCallback, Vi
         MusicBrowser.loadMusic(new Prefs(getContext()).getYear(), context, new MusicLoaderListener() {
             @Override
             public void onLoadSuccess(List<MediaMetaData> listMusic) {
-                if (!listOfSongs.isEmpty()) {
-                    listOfSongs.clear();
-                    Log.d("TAG", "cleaned");
-                }
                 listOfSongs = listMusic;
                 adapterMusic.refresh(listOfSongs);
                 configAudioStreamer();
